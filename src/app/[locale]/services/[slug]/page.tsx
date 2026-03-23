@@ -33,40 +33,6 @@ interface ServiceUIData {
   cta?: { title: string; button: string };
 }
 
-export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
-  const { locale, slug } = await params;
-  
-  const fsService = await fetchServiceBySlug(slug);
-  if (fsService) {
-    const t = fsService[locale as keyof FirestoreService] as FirestoreService['en'] | undefined;
-    const title = t?.title || fsService.en.title;
-    const subtitle = t?.subtitle || fsService.en.subtitle;
-    return {
-      title: `${title} | S-Arch Studio`,
-      description: subtitle,
-    };
-  }
-
-  const data = serviceData[slug as keyof typeof serviceData]?.[locale];
-  if (data) {
-    return {
-      title: `${data.title} | S-Arch Studio`,
-      description: data.subtitle,
-    };
-  }
-  return {};
-}
-
-// Define valid slugs for static generation
-export async function generateStaticParams() {
-  const slugs = ['cultural-civic', 'residential', 'adaptive-reuse'];
-  const locales = ['en', 'fr', 'ar'];
-  
-  return locales.flatMap((locale) => 
-    slugs.map((slug) => ({ locale, slug }))
-  );
-}
-
 const serviceData = {
   'cultural-civic': {
     en: {
@@ -361,8 +327,167 @@ const serviceData = {
         button: 'Demander une Étude'
       }
     }
+  },
+  'interior-design': {
+    en: {
+      title: 'Design & Interior Architecture',
+      subtitle: 'Atmospheres for Living',
+      description: 'Spatial and material design for civic and residential environments, from overall concept to detailed interior atmospheres.',
+      scope: {
+        title: 'Core Design',
+        items: [
+          { title: 'Spatial Planning', description: 'Optimizing flow and functional relationships within the interior volume.' },
+          { title: 'Material Palettes', description: 'Curating tactile experiences through natural stone, timber, and bespoke finishes.' }
+        ]
+      },
+      team: {
+        title: 'Interior Team',
+        lead: 'Sarah Mansour',
+        bio: 'Expert in luxury interior environments.'
+      },
+      cta: {
+        title: 'Ready for a change?',
+        button: 'Contact Us'
+      }
+    },
+    ar: {
+      title: 'التصميم والهندسة الداخلية',
+      subtitle: 'أجواء مخصصة للحياة',
+      description: 'تصميم الفضاءات والمواد للمباني العمومية والسكنية، من الفكرة العامة إلى التفاصيل الداخلية الدقيقة.',
+      scope: {
+        title: 'التصميم الجوهري',
+        items: [
+          { title: 'التخطيط الفضائي', description: 'تحسين التدفق والعلاقات الوظيفية داخل الحجم الداخلي.' },
+          { title: 'لوحات المواد', description: 'تنسيق تجارب ملموسة عبر المواد الطبيعية والتشطيبات المخصصة.' }
+        ]
+      },
+      team: {
+        title: 'فريق التصميم الداخلي',
+        lead: 'سارة منصور',
+        bio: 'خبيرة في البيئات الداخلية الفاخرة.'
+      },
+      cta: {
+        title: 'جاهزون للتغيير؟',
+        button: 'اتصل بنا'
+      }
+    },
+    fr: {
+      title: 'Conception & Architecture d\'Intérieur',
+      subtitle: 'Des Atmosphères pour Vivre',
+      description: 'Conception spatiale et matérielle pour les environnements civiques et résidentiels, du concept global aux ambiances intérieures détaillées.',
+      scope: {
+        title: 'Design Core',
+        items: [
+          { title: 'Planification Spatiale', description: 'Optimisation des flux et des relations fonctionnelles dans le volume.' },
+          { title: 'Palettes Matières', description: 'Curation d\'expériences tactiles via la pierre naturelle et le bois.' }
+        ]
+      },
+      team: {
+        title: 'Équipe Intérieur',
+        lead: 'Sarah Mansour',
+        bio: 'Experte en environnements intérieurs de luxe.'
+      },
+      cta: {
+        title: 'Prêt pour un changement ?',
+        button: 'Contactez-nous'
+      }
+    }
+  },
+  'urban-planning': {
+    en: {
+      title: 'Urban Planning Support',
+      subtitle: 'Structuring the City',
+      description: 'Urban integration studies, master-planning support, and advisory work aligned with regulatory planning tools.',
+      scope: { title: 'Studies', items: [] },
+      team: { title: 'Team', lead: 'Urbanist', bio: 'Expert' },
+      cta: { title: 'Consult', button: 'Start' }
+    },
+    ar: { title: 'دعم التخطيط العمراني', subtitle: 'هيكلة المدينة', description: 'دراسات إدماج عمراني، مرافقة في المخططات التهيئية، واستشارات متناسقة مع أدوات التنظيم والتعمير.', scope: { title: 'دراسات', items: [] }, team: { title: 'فريق', lead: 'مخطط عمراني', bio: 'خبير' }, cta: { title: 'استشارة', button: 'بدء' } },
+    fr: { title: 'Support en Planification Urbaine', subtitle: 'Structurer la Ville', description: 'Études d\'intégration urbaine, support au plan directeur et conseil alignés sur les outils de planification réglementaire.', scope: { title: 'Études', items: [] }, team: { title: 'Équipe', lead: 'Urbaniste', bio: 'Expert' }, cta: { title: 'Consulter', button: 'Démarrer' } }
+  },
+  'construction-supervision': {
+    en: {
+      title: 'Construction Supervision / OPC',
+      subtitle: 'Ensuring Intent',
+      description: 'Rigorous on-site technical supervision and OPC coordination from foundation to handover.',
+      scope: { title: 'Supervision', items: [] },
+      team: { title: 'Team', lead: 'Engineer', bio: 'Expert' },
+      cta: { title: 'Consult', button: 'Start' }
+    },
+    ar: { title: 'الإشراف على التنفيذ / OPC', subtitle: 'ضمان التنفيذ الأمثل', description: 'متابعة تقنية صارمة في الورشة وتنسيق OPC من الأساسات إلى التسليم النهائي.', scope: { title: 'إشراف', items: [] }, team: { title: 'فريق', lead: 'مهندس', bio: 'خبير' }, cta: { title: 'استشارة', button: 'بدء' } },
+    fr: { title: 'Supervision de Chantier / OPC', subtitle: 'Garantir l\'Intention', description: 'Supervision technique rigoureuse sur site et coordination OPC, des fondations jusqu\'à la livraison.', scope: { title: 'Supervision', items: [] }, team: { title: 'Équipe', lead: 'Ingénieur', bio: 'Expert' }, cta: { title: 'Consulter', button: 'Démarrer' } }
+  },
+  'building-restoration': {
+    en: {
+      title: 'Building Restoration',
+      subtitle: 'Extending Lifecycle',
+      description: 'Structural and architectural restoration of deteriorated or damaged existing buildings.',
+      scope: { title: 'Restoration', items: [] },
+      team: { title: 'Team', lead: 'Restorer', bio: 'Expert' },
+      cta: { title: 'Consult', button: 'Start' }
+    },
+    ar: { title: 'ترميم المباني', subtitle: 'إطالة عمر المبنى', description: 'ترميم إنشائي ومعماري للمباني المتضررة أو المتدهورة مع احترام طابعها الأصلي قدر الإمكان.', scope: { title: 'ترميم', items: [] }, team: { title: 'فريق', lead: 'مرمم', bio: 'خبير' }, cta: { title: 'استشارة', button: 'بدء' } },
+    fr: { title: 'Restauration de Bâtiments', subtitle: 'Prolonger le Cycle de Vie', description: 'Restauration structurelle et architecturale de bâtiments existants détériorés ou endommagés.', scope: { title: 'Restauration', items: [] }, team: { title: 'Équipe', lead: 'Restaurateur', bio: 'Expert' }, cta: { title: 'Consulter', button: 'Démarrer' } }
+  },
+  'heritage-restoration': {
+    en: {
+      title: 'Heritage & Archaeological Restoration',
+      subtitle: 'The Weight of History',
+      description: 'Specialized restoration of listed heritage buildings and archaeological sites in coordination with protection authorities.',
+      scope: { title: 'Heritage', items: [] },
+      team: { title: 'Team', lead: 'Heritage Expert', bio: 'Expert' },
+      cta: { title: 'Consult', button: 'Start' }
+    },
+    ar: { title: 'ترميم التراث والآثار', subtitle: 'ثقل التاريخ', description: 'تدخلات متخصصة في ترميم المباني المصنَّفة والمعالم الأثرية بالتنسيق مع هيئات حماية التراث.', scope: { title: 'تراث', items: [] }, team: { title: 'فريق', lead: 'خبير تراث', bio: 'خبير' }, cta: { title: 'استشارة', button: 'بدء' } },
+    fr: { title: 'Restauration du Patrimoine & Archéologique', subtitle: 'Le Poids de l\'Histoire', description: 'Restauration spécialisée de bâtiments patrimoniaux classés et de sites archéologiques en coordination avec les autorités de protection.', scope: { title: 'Patrimoine', items: [] }, team: { title: 'Équipe', lead: 'Expert Patrimoine', bio: 'Expert' }, cta: { title: 'Consulter', button: 'Démarrer' } }
+  },
+  'architectural-studies': {
+    en: {
+      title: 'Architectural Studies',
+      subtitle: 'Foundations of Design',
+      description: 'Preliminary concept and feasibility studies developed into permit-ready architectural packages.',
+      scope: { title: 'Studies', items: [] },
+      team: { title: 'Team', lead: 'Architect', bio: 'Expert' },
+      cta: { title: 'Consult', button: 'Start' }
+    },
+    ar: { title: 'الدراسات المعمارية', subtitle: 'أسس التصميم', description: 'دراسات أولية وتحليل جدوى تُطوَّر إلى ملفات معمارية جاهزة للترخيص.', scope: { title: 'دراسات', items: [] }, team: { title: 'فريق', lead: 'معماري', bio: 'خبير' }, cta: { title: 'استشارة', button: 'بدء' } },
+    fr: { title: 'Études Architecturales', subtitle: 'Fondations du Design', description: 'Études préliminaires de concept et de faisabilité développées jusqu\'aux dossiers d\'exécution.', scope: { title: 'Études', items: [] }, team: { title: 'Équipe', lead: 'Architecte', bio: 'Expert' }, cta: { title: 'Consulter', button: 'Démarrer' } }
   }
 };
+
+export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
+  const { locale, slug } = await params;
+  
+  const fsService = await fetchServiceBySlug(slug);
+  if (fsService) {
+    const t = fsService[locale as keyof FirestoreService] as FirestoreService['en'] | undefined;
+    const title = t?.title || fsService.en.title;
+    const subtitle = t?.subtitle || fsService.en.subtitle;
+    return {
+      title: `${title} | S-Arch Studio`,
+      description: subtitle,
+    };
+  }
+
+  const data = serviceData[slug as keyof typeof serviceData]?.[locale as keyof (typeof serviceData)['residential']];
+  if (data) {
+    return {
+      title: `${data.title} | S-Arch Studio`,
+      description: data.subtitle,
+    };
+  }
+  return {};
+}
+
+// Define valid slugs for static generation
+export async function generateStaticParams() {
+  const slugs = Object.keys(serviceData);
+  const locales = ['en', 'fr', 'ar'];
+  
+  return locales.flatMap((locale) => 
+    slugs.map((slug) => ({ locale, slug }))
+  );
+}
 
 export default async function ServicePage({ params }: ServicePageProps) {
   const { locale, slug } = await params;
@@ -387,7 +512,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
     };
   } else {
     // 2. Fallback to Static Categories
-    const data = serviceData[slug as keyof typeof serviceData]?.[locale];
+    const data = serviceData[slug as keyof typeof serviceData]?.[locale as keyof (typeof serviceData)['residential']];
     if (!data) notFound();
     pageTitle = data.title;
     uiData = { isDynamic: false, ...data } as ServiceUIData;
@@ -419,8 +544,6 @@ export default async function ServicePage({ params }: ServicePageProps) {
          <Breadcrumbs items={breadcrumbs} locale={locale} isRTL={isRtl} />
       </div>
 
-      {/* 1. Hero → Scope → Process → Related Projects → Team Validation → CTA */}
-      
       {/* 2. Service Header (Hero) */}
       <ServiceHero 
         title={uiData.title} 
