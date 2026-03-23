@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Locale } from '@/lib/i18n';
-import { projects, getLocalizedProject } from '@/lib/data/projects';
+import { projects, getLocalizedProject, type Project } from '@/lib/data/projects';
+import type { FirestoreProject } from '@/lib/cms-types';
 
 interface SelectedWorksSectionProps {
   locale: Locale;
-  featuredProjects: any[];
+  featuredProjects: (FirestoreProject | Project)[];
 }
 
 const content = {
@@ -34,14 +35,20 @@ export default function SelectedWorksSection({ locale, featuredProjects }: Selec
 
   const topProjects = (featuredProjects && featuredProjects.length > 0 ? featuredProjects : projects.slice(0, 3)).slice(0, 6).map((p, idx) => {
     let localized;
-    if (p.translations) {
-      // It's a static project
-      localized = getLocalizedProject(p, locale);
-    } else {
+    if ('translations' in p) {
+    // It's a static project
+    localized = getLocalizedProject(p as Project, locale);
+  } else {
       // It's a FirestoreProject
-      localized = p[locale as keyof typeof p] as any;
-      localized = { ...localized, type: localized?.type || p.en?.type || 'Project' };
-      localized.title = localized?.title || p.en?.title || p.slug;
+      const fsProject = p as FirestoreProject;
+      const fsData = fsProject[locale as keyof FirestoreProject] as FirestoreProject['en'] | undefined;
+      localized = { 
+        ...fsData, 
+        type: fsData?.type || fsProject.en?.type || 'Project',
+        title: fsData?.title || fsProject.en?.title || fsProject.slug,
+        location: fsData?.location || fsProject.en?.location || '',
+        year: fsData?.year || fsProject.en?.year || ''
+      };
     }
     
     return {

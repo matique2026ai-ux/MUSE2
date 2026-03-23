@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import { cmsAdd } from '@/lib/cms';
 import { useParams } from 'next/navigation';
+import type { FirestoreSiteConfig } from '@/lib/cms-types';
 
 interface ContactFormProps {
   content: {
@@ -26,7 +27,7 @@ interface ContactFormProps {
   };
   isRtl: boolean;
   dir: 'ltr' | 'rtl';
-  siteConfig?: any;
+  siteConfig?: FirestoreSiteConfig | null;
 }
 
 export default function ContactForm({ content, isRtl, dir, siteConfig }: ContactFormProps) {
@@ -86,7 +87,7 @@ export default function ContactForm({ content, isRtl, dir, siteConfig }: Contact
           </div>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
             <MapPin size={24} color="var(--color-sand)" style={{ flexShrink: 0, marginTop: '2px' }} />
-            <span style={{ fontSize: '1.25rem', fontWeight: 500, lineHeight: 1.5, maxWidth: '40ch' }}>{siteConfig?.address?.[locale] || content.details.locationText}</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 500, lineHeight: 1.5, maxWidth: '40ch' }}>{siteConfig?.address?.[locale as keyof FirestoreSiteConfig['address']] || content.details.locationText}</span>
           </div>
         </div>
         <div style={{ paddingTop: '2.5rem', borderTop: '1px solid var(--color-hairline)' }}>

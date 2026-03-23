@@ -10,6 +10,10 @@ import { ServiceCTA } from '@/components/service/ServiceCTA';
 import { projects as allProjects, getLocalizedProject } from '@/lib/data/projects';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { fetchServiceBySlug, fetchPublicServices } from '@/lib/server-data';
+import type { FirestoreService } from '@/lib/cms-types';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface ServicePageProps {
   params: Promise<{
@@ -23,7 +27,7 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
   
   const fsService = await fetchServiceBySlug(slug);
   if (fsService) {
-    const t = fsService[locale as keyof typeof fsService] as any;
+    const t = fsService[locale as keyof FirestoreService] as FirestoreService['en'] | undefined;
     const title = t?.title || fsService.en.title;
     const subtitle = t?.subtitle || fsService.en.subtitle;
     return {
@@ -359,14 +363,14 @@ export default async function ServicePage({ params }: ServicePageProps) {
   let uiData: any = null;
 
   if (fsService) {
-    const t = fsService[locale as keyof typeof fsService] as any;
+    const t = fsService[locale as keyof FirestoreService] as FirestoreService['en'] | undefined;
     pageTitle = t?.title || fsService.en.title;
     uiData = {
       isDynamic: true,
       title: pageTitle,
       subtitle: t?.subtitle || fsService.en.subtitle,
       description: t?.description || fsService.en.description,
-      features: (t?.features || fsService.en.features || []).map((f: string) => ({ title: f, description: '' })),
+      features: (t?.features || fsService.en.features || []).map((f: string) => ({ title: f, description: f })),
       image: fsService.image || '',
     };
   } else {

@@ -28,7 +28,7 @@ function timestampToString(ts: unknown): string {
 
 // ─── PROJECTS ──────────────────────────────────────────────────────────────
 
-export async function fetchPublicProjects(locale: string): Promise<WithId<FirestoreProject>[]> {
+export async function fetchPublicProjects(): Promise<WithId<FirestoreProject>[]> {
   try {
     const q = query(
       collection(db, "projects"),

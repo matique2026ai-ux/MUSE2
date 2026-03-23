@@ -27,9 +27,10 @@ export function ImageUploader({ folder, value, onChange, label }: ImageUploaderP
     try {
       const url = await cmsUploadImage(file, folder, setProgress);
       onChange(url);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Upload failed:", err);
-      setError(err?.message || "Upload failed. Check your Firebase permissions.");
+      const errorMessage = err instanceof Error ? err.message : "Upload failed. Check your Firebase permissions.";
+      setError(errorMessage);
     } finally {
       setUploading(false);
     }
