@@ -4,7 +4,10 @@ import type { Metadata } from 'next';
 import { locales, type Locale } from '@/lib/i18n';
 import Link from 'next/link';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import { fetchPublicTeam } from '@/lib/server-data';
+import { fetchPublicTeam, fetchOfficeConfig } from '@/lib/server-data';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface OfficePageProps {
   params: Promise<{ locale: string }>;
@@ -201,7 +204,8 @@ export default async function OfficePage({ params }: OfficePageProps) {
   const { locale } = await params;
   if (!locales.includes(locale as Locale)) notFound();
 
-  const content = pageContent[locale as Locale];
+  const officeConfig = await fetchOfficeConfig();
+  const content = officeConfig?.[locale as Locale] || pageContent[locale as Locale];
   const isRtl = locale === 'ar';
   const dir = isRtl ? 'rtl' : 'ltr';
 
@@ -213,7 +217,7 @@ export default async function OfficePage({ params }: OfficePageProps) {
         role: String(m.role[locale as keyof typeof m.role] || m.role.en || ''),
         photo: m.photo
       }))
-    : content.sections.leadership.members;
+    : (content as any).sections?.leadership?.members || (content as any).leadershipMembers || [];
 
   // Standard elegant styling 
   const sectionStyle = {
@@ -280,14 +284,14 @@ export default async function OfficePage({ params }: OfficePageProps) {
       <section style={{ padding: '4rem 0' }}>
         <div className="container">
           <div style={contentWrapperStyle}>
-            <span style={overlineStyle}>{content.sections.whoWeAre.tag}</span>
+            <span style={overlineStyle}>{(content as any).whoWeAreTag || (content as any).sections?.whoWeAre?.tag}</span>
             <p style={{
               fontSize: '1.35rem',
               lineHeight: 1.6,
               color: 'var(--color-text-secondary)',
               maxWidth: '65ch',
             }}>
-              {content.sections.whoWeAre.text}
+              {(content as any).whoWeAreText || (content as any).sections?.whoWeAre?.text}
             </p>
           </div>
         </div>
@@ -297,14 +301,14 @@ export default async function OfficePage({ params }: OfficePageProps) {
       <section style={{ padding: '5rem 0' }}>
         <div className="container">
           <div style={contentWrapperStyle}>
-            <span style={overlineStyle}>{content.sections.leadership.tag}</span>
+            <span style={overlineStyle}>{(content as any).leadershipTag || (content as any).sections?.leadership?.tag}</span>
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
               gap: '3rem',
               marginTop: '2.5rem'
             }}>
-              {leadershipMembers.map((leader, i) => (
+              {leadershipMembers.map((leader: any, i: number) => (
                 <div key={i} style={{ padding: '2.5rem', backgroundColor: 'var(--color-surface-1)', border: '1px solid var(--color-hairline)' }}>
                   {((leader as any).photo) && (
                     <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', marginBottom: '1.5rem', backgroundColor: 'var(--color-hairline)' }}>
@@ -328,7 +332,7 @@ export default async function OfficePage({ params }: OfficePageProps) {
       <section style={{ padding: '5rem 0' }}>
         <div className="container">
           <div style={contentWrapperStyle}>
-            <span style={overlineStyle}>{content.sections.teamStructure.tag}</span>
+            <span style={overlineStyle}>{(content as any).teamStructureTag || (content as any).sections?.teamStructure?.tag}</span>
             <ul style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
@@ -337,7 +341,7 @@ export default async function OfficePage({ params }: OfficePageProps) {
               listStyle: 'none',
               padding: 0
             }}>
-              {content.sections.teamStructure.roles.map((role, i) => (
+              {((content as any).teamStructureRoles || (content as any).sections?.teamStructure?.roles || []).map((role: string, i: number) => (
                 <li key={i} style={{ 
                   fontSize: '1rem', 
                   color: 'var(--color-text-primary)', 
@@ -359,9 +363,9 @@ export default async function OfficePage({ params }: OfficePageProps) {
       <section style={{ padding: '6rem 0' }}>
         <div className="container">
           <div style={{ maxWidth: '1024px', margin: isRtl ? '0 0 0 auto' : '0 auto 0 0' }}>
-            <span style={overlineStyle}>{content.sections.process.tag}</span>
+            <span style={overlineStyle}>{(content as any).processTag || (content as any).sections?.process?.tag}</span>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '3rem', marginTop: '3rem' }}>
-              {content.sections.process.steps.map((step, i) => (
+              {((content as any).processSteps || (content as any).sections?.process?.steps || []).map((step: any, i: number) => (
                 <div key={i} style={{ position: 'relative' }}>
                   <span style={{ 
                     fontSize: '3.5rem', 
@@ -390,9 +394,9 @@ export default async function OfficePage({ params }: OfficePageProps) {
       <section style={{ padding: '5rem 0' }}>
         <div className="container">
           <div style={contentWrapperStyle}>
-            <span style={overlineStyle}>{content.sections.technology.tag}</span>
+            <span style={overlineStyle}>{(content as any).technologyTag || (content as any).sections?.technology?.tag}</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginTop: '2rem' }}>
-              {content.sections.technology.tools.map((tool, i) => (
+              {((content as any).technologyTools || (content as any).sections?.technology?.tools || []).map((tool: string, i: number) => (
                 <span key={i} style={{
                   padding: '1rem 1.5rem',
                   backgroundColor: 'var(--color-surface-1)',
@@ -414,14 +418,14 @@ export default async function OfficePage({ params }: OfficePageProps) {
       <section style={{ padding: '5rem 0' }}>
         <div className="container">
           <div style={{ ...contentWrapperStyle, borderLeft: isRtl ? 'none' : '2px solid var(--color-sand)', borderRight: isRtl ? '2px solid var(--color-sand)' : 'none', paddingLeft: isRtl ? 0 : '1.5rem', paddingRight: isRtl ? '1.5rem' : 0 }}>
-            <span style={overlineStyle}>{content.sections.credibility.tag}</span>
+            <span style={overlineStyle}>{(content as any).credibilityTag || (content as any).sections?.credibility?.tag}</span>
             <p style={{
               fontSize: '1.15rem',
               lineHeight: 1.6,
               color: 'var(--color-text-secondary)',
               maxWidth: '65ch',
             }}>
-              {content.sections.credibility.text}
+              {(content as any).credibilityText || (content as any).sections?.credibility?.text}
             </p>
           </div>
         </div>
@@ -437,7 +441,7 @@ export default async function OfficePage({ params }: OfficePageProps) {
             marginBottom: '3rem',
             letterSpacing: '-0.02em',
           }}>
-            {content.sections.cta.title}
+            {(content as any).ctaTitle || (content as any).sections?.cta?.title}
           </h2>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href={`/${locale}/services`} style={{
@@ -448,7 +452,7 @@ export default async function OfficePage({ params }: OfficePageProps) {
               textDecoration: 'none',
               transition: 'opacity 0.2s',
             }}>
-              {content.sections.cta.btnServices}
+              {(content as any).ctaBtnServices || (content as any).sections?.cta?.btnServices}
             </Link>
             <Link href={`/${locale}/contact`} style={{
               padding: '1rem 2rem',
@@ -459,7 +463,7 @@ export default async function OfficePage({ params }: OfficePageProps) {
               textDecoration: 'none',
               transition: 'background-color 0.2s',
             }}>
-              {content.sections.cta.btnContact}
+              {(content as any).ctaBtnContact || (content as any).sections?.cta?.btnContact}
             </Link>
           </div>
         </div>

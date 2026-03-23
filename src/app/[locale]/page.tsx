@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 import { notFound } from 'next/navigation';
-import { fetchHeroConfig, fetchFeaturedProjects } from '@/lib/server-data';
+import { fetchHeroConfig, fetchFeaturedProjects, fetchEthosConfig, fetchMethodologyConfig } from '@/lib/server-data';
 
 export default async function HomePage({ params }: Props) {
   const { locale } = await params;
@@ -36,14 +36,16 @@ export default async function HomePage({ params }: Props) {
 
   const heroConfig = await fetchHeroConfig();
   const featuredProjects = await fetchFeaturedProjects();
+  const ethosConfig = await fetchEthosConfig();
+  const methodologyConfig = await fetchMethodologyConfig();
 
   return (
     <>
       <HeroSection locale={validLocale} heroConfig={heroConfig} />
-      <EthosSection locale={validLocale} />
+      <EthosSection locale={validLocale} ethosConfig={ethosConfig} />
       <SelectedWorksSection locale={validLocale} featuredProjects={featuredProjects} />
       <ServiceBridgeSection locale={validLocale} />
-      <MethodologySection locale={validLocale} />
+      <MethodologySection locale={validLocale} methodologyConfig={methodologyConfig} />
       <GlobalTrustSection locale={validLocale} />
     </>
   );

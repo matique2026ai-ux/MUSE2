@@ -71,6 +71,27 @@ export interface FirestoreHeroConfig {
   ar: { title: string; subtitle: string; cta: string };
 }
 
+export interface FirestoreEthosConfig {
+  id: "ethos";
+  en: { eyebrow: string; headline: string; paragraphs: string[]; pullQuote: string; stats: { value: string; label: string }[] };
+  fr: { eyebrow: string; headline: string; paragraphs: string[]; pullQuote: string; stats: { value: string; label: string }[] };
+  ar: { eyebrow: string; headline: string; paragraphs: string[]; pullQuote: string; stats: { value: string; label: string }[] };
+}
+
+export interface FirestoreMethodologyConfig {
+  id: "methodology";
+  en: { eyebrow: string; headline: string; intro: string; steps: { phase: string; title: string; body: string }[] };
+  fr: { eyebrow: string; headline: string; intro: string; steps: { phase: string; title: string; body: string }[] };
+  ar: { eyebrow: string; headline: string; intro: string; steps: { phase: string; title: string; body: string }[] };
+}
+
+export interface FirestoreOfficeConfig {
+  id: "office";
+  en: { heroTag: string; heroTitle: string; heroSub: string; whoWeAreTag: string; whoWeAreText: string; leadershipTag: string; teamStructureTag: string; teamStructureRoles: string[]; processTag: string; processSteps: { id: string; title: string; desc: string }[]; technologyTag: string; technologyTools: string[]; credibilityTag: string; credibilityText: string; ctaTitle: string; ctaBtnServices: string; ctaBtnContact: string };
+  fr: { heroTag: string; heroTitle: string; heroSub: string; whoWeAreTag: string; whoWeAreText: string; leadershipTag: string; teamStructureTag: string; teamStructureRoles: string[]; processTag: string; processSteps: { id: string; title: string; desc: string }[]; technologyTag: string; technologyTools: string[]; credibilityTag: string; credibilityText: string; ctaTitle: string; ctaBtnServices: string; ctaBtnContact: string };
+  ar: { heroTag: string; heroTitle: string; heroSub: string; whoWeAreTag: string; whoWeAreText: string; leadershipTag: string; teamStructureTag: string; teamStructureRoles: string[]; processTag: string; processSteps: { id: string; title: string; desc: string }[]; technologyTag: string; technologyTools: string[]; credibilityTag: string; credibilityText: string; ctaTitle: string; ctaBtnServices: string; ctaBtnContact: string };
+}
+
 export interface FirestoreSiteConfig {
   id: "global";
   officeName: string;
@@ -79,6 +100,7 @@ export interface FirestoreSiteConfig {
   email: string;
   instagram: string;
   linkedin: string;
+  slogan: { en: string; fr: string; ar: string };
   copyright: { en: string; fr: string; ar: string };
 }
 

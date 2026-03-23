@@ -16,7 +16,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { FirestoreProject, FirestoreService, FirestoreTeamMember, FirestoreHeroConfig, FirestoreSiteConfig } from "@/lib/cms-types";
+import type { FirestoreProject, FirestoreService, FirestoreTeamMember, FirestoreHeroConfig, FirestoreSiteConfig, FirestoreEthosConfig, FirestoreMethodologyConfig, FirestoreOfficeConfig } from "@/lib/cms-types";
 import { projects as staticProjects } from "@/lib/data/projects";
 
 type WithId<T> = T & { id: string };
@@ -190,6 +190,42 @@ export async function fetchSiteConfig(): Promise<FirestoreSiteConfig | null> {
   try {
     const snap = await getDoc(doc(db, "site_config", "global"));
     if (snap.exists()) return snap.data() as FirestoreSiteConfig;
+  } catch {
+    // fallback
+  }
+  return null;
+}
+
+// ─── ETHOS CONFIG ──────────────────────────────────────────────────────────
+
+export async function fetchEthosConfig(): Promise<FirestoreEthosConfig | null> {
+  try {
+    const snap = await getDoc(doc(db, "home_config", "ethos"));
+    if (snap.exists()) return snap.data() as FirestoreEthosConfig;
+  } catch {
+    // fallback
+  }
+  return null;
+}
+
+// ─── METHODOLOGY CONFIG ────────────────────────────────────────────────────
+
+export async function fetchMethodologyConfig(): Promise<FirestoreMethodologyConfig | null> {
+  try {
+    const snap = await getDoc(doc(db, "home_config", "methodology"));
+    if (snap.exists()) return snap.data() as FirestoreMethodologyConfig;
+  } catch {
+    // fallback
+  }
+  return null;
+}
+
+// ─── OFFICE CONFIG ─────────────────────────────────────────────────────────
+
+export async function fetchOfficeConfig(): Promise<FirestoreOfficeConfig | null> {
+  try {
+    const snap = await getDoc(doc(db, "office_config", "main"));
+    if (snap.exists()) return snap.data() as FirestoreOfficeConfig;
   } catch {
     // fallback
   }

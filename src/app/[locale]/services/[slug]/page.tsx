@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import type { Locale } from '@/lib/i18n';
+import { locales, type Locale, isValidLocale } from '@/lib/i18n';
 import type { Metadata } from 'next';
 import { ServiceHero } from '@/components/service/ServiceHero';
 import { ServiceScope } from '@/components/service/ServiceScope';
@@ -7,19 +7,30 @@ import { ServiceProcess } from '@/components/service/ServiceProcess';
 import { ServiceTeam } from '@/components/service/ServiceTeam';
 import { ServiceProjects } from '@/components/service/ServiceProjects';
 import { ServiceCTA } from '@/components/service/ServiceCTA';
-import { projects as allProjects, getLocalizedProject } from '@/lib/data/projects';
+import { getLocalizedProject, projects as allProjects } from '@/lib/data/projects';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
-import { fetchServiceBySlug, fetchPublicServices } from '@/lib/server-data';
+import { fetchServiceBySlug } from '@/lib/server-data';
 import type { FirestoreService } from '@/lib/cms-types';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 interface ServicePageProps {
-  params: Promise<{
-    locale: Locale;
-    slug: string;
-  }>;
+  params: Promise<{ locale: Locale; slug: string }>;
+}
+
+interface ServiceUIData {
+  isDynamic: boolean;
+  title: string;
+  subtitle: string;
+  description: string;
+  features: { title: string; description: string }[];
+  image: string;
+  // Optional sub-component data from static fallback
+  scope?: { title: string; items: { title: string; description: string }[] };
+  process?: { title: string; steps: { label: string; text: string }[] };
+  team?: { title: string; lead: string; bio: string };
+  cta?: { title: string; button: string };
 }
 
 export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
@@ -355,12 +366,13 @@ const serviceData = {
 
 export default async function ServicePage({ params }: ServicePageProps) {
   const { locale, slug } = await params;
+  if (!isValidLocale(locale)) notFound();
   const isRtl = locale === 'ar';
   
   // 1. Try Firestore First
   const fsService = await fetchServiceBySlug(slug);
   let pageTitle = '';
-  let uiData: any = null;
+  let uiData: ServiceUIData | null = null;
 
   if (fsService) {
     const t = fsService[locale as keyof FirestoreService] as FirestoreService['en'] | undefined;
@@ -378,14 +390,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
     const data = serviceData[slug as keyof typeof serviceData]?.[locale];
     if (!data) notFound();
     pageTitle = data.title;
-    uiData = { isDynamic: false, ...data };
+    uiData = { isDynamic: false, ...data } as ServiceUIData;
   }
 
   // Fetch and localize projects for this service
-  // For static ones it uses category match, for dynamic ones we can do the same if they overlap,
-  // or just general fallback
   const serviceProjects = allProjects
-    .filter(p => !uiData.isDynamic ? p.category === slug : p.translations.en.services.some((s: string) => s.toLowerCase() === slug.toLowerCase() || s.toLowerCase() === pageTitle.toLowerCase()))
+    .filter(p => !uiData?.isDynamic ? p.category === slug : p.translations.en.services.some((s: string) => s.toLowerCase() === slug.toLowerCase() || s.toLowerCase() === pageTitle.toLowerCase()))
     .map(p => getLocalizedProject(p, locale))
     .slice(0, 3);
 
@@ -422,25 +432,29 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
       {/* 3. Core Capabilities / Scope */}
       <ServiceScope 
-        title={uiData.isDynamic ? '' : uiData.scope.title} 
+        title={uiData.isDynamic ? '' : (uiData.scope?.title || '')} 
         description={uiData.description} 
-        items={uiData.isDynamic ? uiData.features : uiData.scope.items} 
+        items={uiData.isDynamic ? uiData.features : (uiData.scope?.items || [])} 
       />
 
       {!uiData.isDynamic && (
         <>
           {/* 4. Methodology / Process */}
-          <ServiceProcess 
-            title={uiData.process.title} 
-            steps={uiData.process.steps} 
-          />
+          {uiData.process && (
+            <ServiceProcess 
+              title={uiData.process.title} 
+              steps={uiData.process.steps} 
+            />
+          )}
           
           {/* 6. Lead Expert / Service Team Validation */}
-          <ServiceTeam 
-            title={uiData.team.title} 
-            lead={uiData.team.lead} 
-            bio={uiData.team.bio} 
-          />
+          {uiData.team && (
+            <ServiceTeam 
+              title={uiData.team.title} 
+              lead={uiData.team.lead} 
+              bio={uiData.team.bio} 
+            />
+          )}
         </>
       )}
 
@@ -456,8 +470,8 @@ export default async function ServicePage({ params }: ServicePageProps) {
       <ServiceCTA 
         locale={locale} 
         isRtl={isRtl} 
-        title={uiData.isDynamic ? t.ctaTitle : uiData.cta.title} 
-        buttonText={uiData.isDynamic ? t.ctaBtn : uiData.cta.button} 
+        title={uiData?.isDynamic ? t.ctaTitle : (uiData?.cta?.title || t.ctaTitle)} 
+        buttonText={uiData?.isDynamic ? t.ctaBtn : (uiData?.cta?.button || t.ctaBtn)} 
       />
     </main>
   );

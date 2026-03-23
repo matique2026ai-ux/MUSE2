@@ -1,4 +1,6 @@
 const { chromium } = require('playwright');
+/* eslint-disable @typescript-eslint/no-require-imports */
+const puppeteer = require('puppeteer');
 const path = require('path');
 
 (async () => {

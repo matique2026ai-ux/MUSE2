@@ -12,6 +12,7 @@ import {
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Providers } from '@/components/Providers';
+import { fetchSiteConfig } from '@/lib/server-data';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -49,13 +50,17 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const title = brandTitles[locale] ?? 'S-Arch Studio';
+  const siteConfig = await fetchSiteConfig();
+  
+  const title = siteConfig?.officeName || brandTitles[locale] || 'S-Arch Studio';
+  const description = siteConfig?.slogan?.[locale as Locale] || brandDescriptions[locale] || brandDescriptions.en;
+
   return {
     title: {
       template: `%s | ${title}`,
       default: title,
     },
-    description: brandDescriptions[locale] ?? brandDescriptions.en,
+    description,
   };
 }
 
@@ -76,6 +81,8 @@ export default async function LocaleLayout({
   const dir = localeDir[validLocale];
   const lang = localeLang[validLocale];
 
+  const siteConfig = await fetchSiteConfig();
+
   return (
     <html
       lang={lang}
@@ -84,9 +91,9 @@ export default async function LocaleLayout({
     >
       <body style={{ backgroundColor: 'var(--color-surface-0)', color: 'var(--color-text-primary)' }}>
         <Providers>
-          <Header locale={validLocale} />
+          <Header locale={validLocale} siteConfig={siteConfig} />
           <main id="main-content">{children}</main>
-          <Footer locale={validLocale} />
+          <Footer locale={validLocale} siteConfig={siteConfig} />
         </Providers>
       </body>
     </html>

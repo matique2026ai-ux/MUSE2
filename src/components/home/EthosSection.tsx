@@ -2,9 +2,11 @@
 
 import { motion } from 'framer-motion';
 import type { Locale } from '@/lib/i18n';
+import type { FirestoreEthosConfig } from '@/lib/cms-types';
 
 interface EthosSectionProps {
   locale: Locale;
+  ethosConfig?: FirestoreEthosConfig | null;
 }
 
 const content = {
@@ -53,8 +55,8 @@ const fadeUpParams = {
   transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }
 };
 
-export default function EthosSection({ locale }: EthosSectionProps) {
-  const c = content[locale];
+export default function EthosSection({ locale, ethosConfig }: EthosSectionProps) {
+  const c = ethosConfig?.[locale] || content[locale];
   const isRTL = locale === 'ar';
 
   return (
@@ -162,7 +164,28 @@ export default function EthosSection({ locale }: EthosSectionProps) {
                 textAlign: isRTL ? 'right' : 'left'
               }}
             >
-              {[c.stat1, c.stat2, c.stat3].map((stat, i) => (
+              {(c as any).stats ? ((c as any).stats as {value: string, label: string}[]).map((stat, i) => (
+                <div key={i}>
+                  <div style={{ 
+                    fontSize: '2rem', 
+                    fontWeight: 300, 
+                    color: 'var(--color-sand)',
+                    marginBottom: '0.25rem',
+                    fontVariantNumeric: 'lining-nums tabular-nums'
+                  }}>
+                    {stat.value}
+                  </div>
+                  <div style={{ 
+                    fontSize: '0.75rem', 
+                    textTransform: 'uppercase', 
+                    letterSpacing: '0.1em',
+                    color: 'var(--color-text-tertiary)',
+                    fontWeight: 600
+                  }}>
+                    {stat.label}
+                  </div>
+                </div>
+              )) : [ (c as any).stat1, (c as any).stat2, (c as any).stat3 ].filter(Boolean).map((stat: any, i: number) => (
                 <div key={i}>
                   <div style={{ 
                     fontSize: '2rem', 

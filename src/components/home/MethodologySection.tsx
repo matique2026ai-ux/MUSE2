@@ -1,7 +1,9 @@
 import type { Locale } from '@/lib/i18n';
+import type { FirestoreMethodologyConfig } from '@/lib/cms-types';
 
 interface MethodologySectionProps {
   locale: Locale;
+  methodologyConfig?: FirestoreMethodologyConfig | null;
 }
 
 const content = {
@@ -88,8 +90,8 @@ const content = {
   },
 } satisfies Record<Locale, { eyebrow: string; headline: string; intro: string; steps: { phase: string; title: string; body: string }[] }>;
 
-export default function MethodologySection({ locale }: MethodologySectionProps) {
-  const c = content[locale] || content['en'];
+export default function MethodologySection({ locale, methodologyConfig }: MethodologySectionProps) {
+  const c = methodologyConfig?.[locale] || content[locale] || content['en'];
   if (!c) return null;
 
 

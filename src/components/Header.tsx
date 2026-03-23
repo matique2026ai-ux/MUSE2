@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 import { type Locale } from '@/lib/i18n';
+import type { FirestoreSiteConfig } from '@/lib/cms-types';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useFirebaseAuth } from "@/providers/FirebaseAuthProvider";
 import { User, LogOut } from "lucide-react";
 
 interface HeaderProps {
   locale: Locale;
+  siteConfig?: FirestoreSiteConfig | null;
 }
 
 const navLinks = {
@@ -36,7 +38,7 @@ const navLinks = {
   ],
 } satisfies Record<Locale, { label: string; href: string }[]>;
 
-export default function Header({ locale }: HeaderProps) {
+export default function Header({ locale, siteConfig }: HeaderProps) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -121,9 +123,9 @@ export default function Header({ locale }: HeaderProps) {
         >
           {/* Brand */}
           <Link href={`/${locale}`} style={brandStyle} aria-label="S-Arch Studio – Home" className="flex flex-col items-start gap-0.5">
-            <span>S-Arch Studio</span>
+            <span>{siteConfig?.officeName || 'S-Arch Studio'}</span>
             <span style={{ fontSize: '0.6rem', letterSpacing: '0.12em', fontWeight: 400, color: 'var(--color-text-secondary)', textTransform: 'uppercase', lineHeight: 1 }}>
-              {locale === 'ar' ? 'جذور سطايفية، رؤية عالمية' : locale === 'fr' ? 'Racines de Sétif, Vision Globale' : 'Setif Roots, Global Outlook'}
+              {siteConfig?.slogan?.[locale] || (locale === 'ar' ? 'جذور سطايفية، رؤية عالمية' : locale === 'fr' ? 'Racines de Sétif, Vision Globale' : 'Setif Roots, Global Outlook')}
             </span>
           </Link>
 
