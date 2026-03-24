@@ -10,16 +10,14 @@ import {
   getDocs,
   getDoc,
   query,
-  orderBy,
   where,
   limit,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { FirestoreProject, FirestoreService, FirestoreTeamMember, FirestoreHeroConfig, FirestoreSiteConfig, FirestoreEthosConfig, FirestoreMethodologyConfig, FirestoreOfficeConfig } from "@/lib/cms-types";
+import type { FirestoreProject, FirestoreService, FirestoreTeamMember, FirestoreHeroConfig, FirestoreSiteConfig, FirestoreEthosConfig, FirestoreMethodologyConfig, FirestoreOfficeConfig, WithId } from "@/lib/cms-types";
 import { projects as staticProjects } from "@/lib/data/projects";
 
-type WithId<T> = T & { id: string };
 
 function timestampToString(ts: unknown): string {
   if (ts instanceof Timestamp) return ts.toDate().toISOString();
@@ -32,17 +30,20 @@ export async function fetchPublicProjects(): Promise<WithId<FirestoreProject>[]>
   try {
     const q = query(
       collection(db, "projects"),
-      where("published", "==", true),
-      orderBy("order", "asc")
+      where("published", "==", true)
     );
     const snap = await getDocs(q);
     if (snap.empty) return buildStaticProjectsFallback();
-    return snap.docs.map(d => ({
+    
+    // Sort in memory to avoid Firestore composite index requirement errors
+    const docs = snap.docs.map(d => ({
       id: d.id,
       ...(d.data() as FirestoreProject),
       createdAt: timestampToString(d.data().createdAt),
       updatedAt: timestampToString(d.data().updatedAt),
-    }));
+    })).sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    return docs;
   } catch {
     // Firestore not accessible (rules / offline) — use static fallback
     return buildStaticProjectsFallback();
@@ -89,13 +90,14 @@ export async function fetchFeaturedProjects(): Promise<WithId<FirestoreProject>[
     const q = query(
       collection(db, "projects"),
       where("published", "==", true),
-      where("featured", "==", true),
-      orderBy("order", "asc"),
-      limit(6)
+      where("featured", "==", true)
     );
     const snap = await getDocs(q);
     if (!snap.empty) {
-      return snap.docs.map(d => ({ id: d.id, ...(d.data() as FirestoreProject) }));
+      // Sort and slice in memory
+      const docs = snap.docs.map(d => ({ id: d.id, ...(d.data() as FirestoreProject) }));
+      docs.sort((a, b) => (a.order || 0) - (b.order || 0));
+      return docs.slice(0, 6);
     }
   } catch {
     // fallback
@@ -126,12 +128,12 @@ export async function fetchPublicServices(): Promise<WithId<FirestoreService>[]>
   try {
     const q = query(
       collection(db, "services"),
-      where("published", "==", true),
-      orderBy("order", "asc")
+      where("published", "==", true)
     );
     const snap = await getDocs(q);
     if (!snap.empty) {
-      return snap.docs.map(d => ({ id: d.id, ...(d.data() as FirestoreService) }));
+      const docs = snap.docs.map(d => ({ id: d.id, ...(d.data() as FirestoreService) }));
+      return docs.sort((a, b) => (a.order || 0) - (b.order || 0));
     }
   } catch {
     // fallback — returns empty (pages will use their own hardcoded fallback)
@@ -159,12 +161,12 @@ export async function fetchPublicTeam(): Promise<WithId<FirestoreTeamMember>[]> 
   try {
     const q = query(
       collection(db, "team"),
-      where("published", "==", true),
-      orderBy("order", "asc")
+      where("published", "==", true)
     );
     const snap = await getDocs(q);
     if (!snap.empty) {
-      return snap.docs.map(d => ({ id: d.id, ...(d.data() as FirestoreTeamMember) }));
+      const docs = snap.docs.map(d => ({ id: d.id, ...(d.data() as FirestoreTeamMember) }));
+      return docs.sort((a, b) => (a.order || 0) - (b.order || 0));
     }
   } catch {
     // fallback

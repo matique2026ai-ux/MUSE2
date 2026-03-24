@@ -59,6 +59,25 @@ export default function EthosSection({ locale, ethosConfig }: EthosSectionProps)
   const c = ethosConfig?.[locale] || content[locale];
   const isRTL = locale === 'ar';
 
+  // Normalize content structure without 'any'
+  type Stat = { value: string; label: string };
+  const rawContent = c as { 
+    stats?: Stat[]; 
+    stat1?: Stat; 
+    stat2?: Stat; 
+    stat3?: Stat;
+    eyebrow: string;
+    headline: string;
+    paragraphs: string[];
+    pullQuote: string;
+  };
+
+  const stats: Stat[] = rawContent.stats || [
+    rawContent.stat1,
+    rawContent.stat2,
+    rawContent.stat3
+  ].filter((s): s is Stat => !!s);
+
   return (
     <section 
       aria-labelledby="ethos-heading"
@@ -164,28 +183,7 @@ export default function EthosSection({ locale, ethosConfig }: EthosSectionProps)
                 textAlign: isRTL ? 'right' : 'left'
               }}
             >
-              {(c as any).stats ? ((c as any).stats as {value: string, label: string}[]).map((stat, i) => (
-                <div key={i}>
-                  <div style={{ 
-                    fontSize: '2rem', 
-                    fontWeight: 300, 
-                    color: 'var(--color-sand)',
-                    marginBottom: '0.25rem',
-                    fontVariantNumeric: 'lining-nums tabular-nums'
-                  }}>
-                    {stat.value}
-                  </div>
-                  <div style={{ 
-                    fontSize: '0.75rem', 
-                    textTransform: 'uppercase', 
-                    letterSpacing: '0.1em',
-                    color: 'var(--color-text-tertiary)',
-                    fontWeight: 600
-                  }}>
-                    {stat.label}
-                  </div>
-                </div>
-              )) : [ (c as any).stat1, (c as any).stat2, (c as any).stat3 ].filter(Boolean).map((stat: any, i: number) => (
+              {stats.map((stat: { value: string; label: string }, i: number) => (
                 <div key={i}>
                   <div style={{ 
                     fontSize: '2rem', 

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { locales, type Locale, isValidLocale } from '@/lib/i18n';
+import { type Locale, isValidLocale } from '@/lib/i18n';
 import type { Metadata } from 'next';
 import { ServiceHero } from '@/components/service/ServiceHero';
 import { ServiceScope } from '@/components/service/ServiceScope';
@@ -8,9 +8,9 @@ import { ServiceTeam } from '@/components/service/ServiceTeam';
 import { ServiceProjects } from '@/components/service/ServiceProjects';
 import { ServiceCTA } from '@/components/service/ServiceCTA';
 import { getLocalizedProject, projects as allProjects } from '@/lib/data/projects';
-import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { fetchServiceBySlug } from '@/lib/server-data';
 import type { FirestoreService } from '@/lib/cms-types';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -427,7 +427,7 @@ const serviceData = {
       cta: { title: 'Consult', button: 'Start' }
     },
     ar: { title: 'ترميم المباني', subtitle: 'إطالة عمر المبنى', description: 'ترميم إنشائي ومعماري للمباني المتضررة أو المتدهورة مع احترام طابعها الأصلي قدر الإمكان.', scope: { title: 'ترميم', items: [] }, team: { title: 'فريق', lead: 'مرمم', bio: 'خبير' }, cta: { title: 'استشارة', button: 'بدء' } },
-    fr: { title: 'Restauration de Bâtiments', subtitle: 'Prolonger le Cycle de Vie', description: 'Restauration structurelle et architecturale de bâtiments existants détériorés ou endommagés.', scope: { title: 'Restauration', items: [] }, team: { title: 'Équipe', lead: 'Restaurateur', bio: 'Expert' }, cta: { title: 'Consulter', button: 'Démarrer' } }
+    fr: { title: 'Restauration de Bâtiments', subtitle: 'Prolonger le Cycle de Vie', description: 'Restauration structurelle et architecturale de bâtiments existants détériorés ou endommagés.', scope: { title: 'Restoration', items: [] }, team: { title: 'Équipe', lead: 'Restaurateur', bio: 'Expert' }, cta: { title: 'Consulter', button: 'Démarrer' } }
   },
   'heritage-restoration': {
     en: {
@@ -454,6 +454,7 @@ const serviceData = {
     fr: { title: 'Études Architecturales', subtitle: 'Fondations du Design', description: 'Études préliminaires de concept et de faisabilité développées jusqu\'aux dossiers d\'exécution.', scope: { title: 'Études', items: [] }, team: { title: 'Équipe', lead: 'Architecte', bio: 'Expert' }, cta: { title: 'Consulter', button: 'Démarrer' } }
   }
 };
+
 
 export async function generateMetadata({ params }: ServicePageProps): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -539,11 +540,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   return (
     <main style={{ minHeight: '100vh', backgroundColor: 'var(--color-surface-0)', position: 'relative' }}>
-      {/* Breadcrumbs Overlay */}
-      <div className="absolute top-0 left-0 w-full z-10" dir={isRtl ? 'rtl' : 'ltr'}>
-         <Breadcrumbs items={breadcrumbs} locale={locale} isRTL={isRtl} />
-      </div>
-
+      <Breadcrumbs items={breadcrumbs} locale={locale} isRTL={isRtl} />
       {/* 2. Service Header (Hero) */}
       <ServiceHero 
         title={uiData.title} 
@@ -551,6 +548,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
         slug={slug} 
         locale={locale}
         isRtl={isRtl} 
+        image={uiData.image}
       />
 
       {/* 3. Core Capabilities / Scope */}

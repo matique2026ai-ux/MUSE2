@@ -17,20 +17,20 @@
   --color-stone:        #3a4459;
   --color-smoke:        #5a6680;
 
-  /* Surface — Sophisticated Greige */
-  --color-surface-0:    #F0EDE7; /* Light Greige — primary bg */
-  --color-surface-1:    #E4E0D6; /* Greige mid */
-  --color-surface-2:    #D5D0C6; /* Greige border base */
+  /* Surface — Stark Minimalist Architectural Palette */
+  --color-surface-0:    #FFFFFF; /* Pure White */
+  --color-surface-1:    #F8F8F8; /* Ultra-light Cool Grey */
+  --color-surface-2:    #EFEFEF; /* Light Grey for dividers */
 
-  /* Text */
-  --color-text-primary:   #12171F; /* Deep Carbon text */
-  --color-text-secondary: #5a6070; /* Muted slate */
-  --color-text-muted:     #7a8494;
-  --color-text-inverse:   #F0EDE7;
+  /* Text — Absolute Contrast */
+  --color-text-primary:   #0D0D0D; /* Near Black */
+  --color-text-secondary: #4A4A4A; /* Dark Slate */
+  --color-text-muted:     #8C8C8C;
+  --color-text-inverse:   #FFFFFF;
 
-  /* Hairlines */
-  --color-hairline:     #D5D0C6;
-  --color-hairline-inv: rgba(255, 255, 255, 0.10);
+  /* Hairlines — Minimalist Etching */
+  --color-hairline:     #E5E5E5;
+  --color-hairline-inv: rgba(255, 255, 255, 0.08);
 
   /* Accent */
   --color-accent:       #D4AF37;
@@ -146,3 +146,48 @@ img, video {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ─── Admin Panel Scope — Pure Dark Override ─────────────────── */
+/* Force pure dark backgrounds — blocks any global body/heading 
+   color from leaking into the admin shell */
+.admin-shell {
+  background-color: #0C0C0C !important;
+  color: #F0F0F0 !important;
+}
+
+.admin-shell aside {
+  background-color: #111111 !important;
+}
+
+.admin-shell main {
+  background-color: #0C0C0C !important;
+}
+
+.admin-shell h1,
+.admin-shell h2,
+.admin-shell h3,
+.admin-shell h4,
+.admin-shell h5,
+.admin-shell h6 {
+  color: #F0F0F0 !important;
+}
+
+.admin-shell p {
+  max-width: unset;
+}
+
+/* ─── Admin Layout Strict Overrides ─────────────────── */
+.admin-shell header {
+  box-sizing: border-box !important;
+}
+
+.admin-shell main {
+  box-sizing: border-box !important;
+}
+
+.admin-shell aside {
+  width: 260px !important;
+  min-width: 260px !important;
+  flex-shrink: 0 !important;
+}
+

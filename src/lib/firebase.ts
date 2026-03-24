@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, initializeFirestore, memoryLocalCache } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -13,8 +13,21 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase only if it hasn't been already
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+// Global Firestore initialization with forced memory cache to prevent 
+// "Persisting failed: Another write batch or compaction is already active"
+let firestoreInstance;
+try {
+  firestoreInstance = initializeFirestore(app, {
+    localCache: memoryLocalCache(),
+  });
+} catch {
+  // If it's already been initialized, just get the existing instance
+  firestoreInstance = getFirestore(app);
+}
+
+export const db = firestoreInstance;
 export const storage = getStorage(app);

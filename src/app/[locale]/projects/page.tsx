@@ -227,7 +227,7 @@ export default async function ProjectsArchivePage({ params }: ProjectsPageProps)
   const dir = isRtl ? 'rtl' : 'ltr';
 
   // Fetch projects from Firestore (falls back to static data)
-  const firestoreProjects = await fetchPublicProjects(locale);
+  const firestoreProjects = await fetchPublicProjects();
   const projects = firestoreProjects.map(p => {
     const t = p[locale as keyof typeof p] as { title?: string; location?: string; year?: string; type?: string; tagline?: string } | undefined;
     return {

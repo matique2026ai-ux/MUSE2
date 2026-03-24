@@ -301,13 +301,14 @@ function AuthCluster({ locale }: { locale: Locale }) {
       style={{ 
         fontSize: '0.75rem', 
         fontWeight: 600, 
-        padding: '0.5rem 1rem', 
-        backgroundColor: 'var(--color-text-primary)', 
-        color: 'var(--color-surface-0)', 
+        color: 'var(--color-text-primary)', 
         textDecoration: 'none',
         textTransform: 'uppercase',
-        letterSpacing: '0.1em'
+        letterSpacing: '0.1em',
+        padding: '0.25rem',
+        borderBottom: '1px solid transparent',
       }}
+      className="hover:border-[var(--color-sand)] hover:text-[var(--color-sand)] transition-colors"
     >
       {locale === 'ar' ? 'دخول' : locale === 'fr' ? 'Accès' : 'Access'}
     </Link>

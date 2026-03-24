@@ -33,7 +33,7 @@ export function LogoutButton() {
     <button
       onClick={handleLogout}
       disabled={loading}
-      className="w-full flex items-center gap-5 px-6 py-4 text-base text-[#ff5555]/80 hover:text-[#ff5555] hover:bg-[#ff5555]/10 rounded-md transition-colors disabled:opacity-50"
+      className="w-full flex items-center gap-2 text-[14px] text-[#555555] hover:text-[#888888] transition-colors disabled:opacity-50"
     >
       <LogOut className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
       <span className="font-medium tracking-wide">{loading ? "..." : logoutLabels[locale]}</span>

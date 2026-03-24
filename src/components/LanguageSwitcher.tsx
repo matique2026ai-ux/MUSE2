@@ -30,42 +30,49 @@ export default function LanguageSwitcher({ currentLocale }: LanguageSwitcherProp
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '0.125rem',
-        border: '1px solid var(--color-hairline)',
-        borderRadius: 'var(--radius-md)',
-        overflow: 'hidden',
-        backgroundColor: 'var(--color-surface-2)',
+        gap: '0.25rem',
       }}
     >
-      {locales.map((locale) => {
+      {locales.map((locale, index) => {
         const isActive = locale === currentLocale;
         return (
-          <button
-            key={locale}
-            type="button"
-            onClick={() => switchLocale(locale)}
-            aria-pressed={isActive}
-            aria-label={`Switch to ${localeLabels[locale]}`}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0.3rem 0.6rem',
-              fontSize: '0.75rem',
-              fontWeight: isActive ? 600 : 400,
-              color: isActive ? 'var(--color-surface-0)' : 'var(--color-text-secondary)',
-              backgroundColor: isActive ? 'var(--color-obsidian)' : 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'background-color 150ms ease, color 150ms ease',
-              letterSpacing: '0.03em',
-              lineHeight: 1,
-              minWidth: '1.75rem',
-              textTransform: 'uppercase',
-            }}
-          >
-            {locale}
-          </button>
+          <div key={locale} style={{ display: 'flex', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => switchLocale(locale)}
+              aria-pressed={isActive}
+              aria-label={`Switch to ${localeLabels[locale]}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0.25rem',
+                fontSize: '0.75rem',
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: isActive ? 'default' : 'pointer',
+                transition: 'color 150ms ease',
+                letterSpacing: '0.05em',
+                lineHeight: 1,
+                textTransform: 'uppercase',
+              }}
+              className="hover:text-[var(--color-text-primary)]"
+            >
+              {locale}
+            </button>
+            {index < locales.length - 1 && (
+              <span style={{ 
+                color: 'var(--color-text-secondary)', 
+                opacity: 0.5, 
+                fontSize: '0.6rem', 
+                margin: '0 2px' 
+              }}>
+                /
+              </span>
+            )}
+          </div>
         );
       })}
     </div>

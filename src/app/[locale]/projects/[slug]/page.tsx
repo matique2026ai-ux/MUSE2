@@ -16,7 +16,7 @@ interface ProjectDetailProps {
 
 // 1. DYNAMIC ROUTES
 export async function generateStaticParams() {
-  const allProjects = await fetchPublicProjects('en');
+  const allProjects = await fetchPublicProjects();
   const params: { locale: string; slug: string }[] = [];
   allProjects.forEach((p) => {
     locales.forEach((l) => {
@@ -117,12 +117,12 @@ export default async function ProjectDetailPage({ params }: ProjectDetailProps) 
   ];
 
   // Fetch Related Projects (Same Category)
-  const allPublic = await fetchPublicProjects(locale);
+  const allPublic = await fetchPublicProjects();
   const related = allPublic
     .filter(p => p.category === project.category && p.slug !== project.slug)
     .slice(0, 3)
     .map(p => {
-       const pt = p[lang as keyof typeof p] as any;
+       const pt = p[lang as keyof typeof p] as { title: string; type: string; year: string; location: string } | undefined;
        return {
          slug: p.slug,
          heroImage: p.heroImage,

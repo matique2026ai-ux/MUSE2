@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { Plus, X, Image as ImageIcon, Loader2, GripVertical, Upload } from "lucide-react";
+import { Plus, X, Loader2, GripVertical } from "lucide-react";
 import Image from "next/image";
 import { cmsUploadImage } from "@/lib/cms";
 

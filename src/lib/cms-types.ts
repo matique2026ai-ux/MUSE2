@@ -2,6 +2,7 @@
  * Firestore data types for the CMS.
  * These are the canonical types stored in Firestore.
  */
+export type WithId<T> = T & { id: string };
 
 export type ProjectStatus = "active" | "completed" | "design" | "on_hold" | "archived";
 export type ProjectCategory =

@@ -7,11 +7,18 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "screenshot.cjs",
+    "test_prisma.cjs",
+    "tmp/take_screenshots.cjs",
+    "take_screenshots.cjs",
+    "screenshot.js",
+    "test_prisma.js",
+    "tmp/take_screenshots.js",
+    "take_screenshots.js",
   ]),
 ]);
 

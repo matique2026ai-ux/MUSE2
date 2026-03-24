@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { locales, type Locale } from '@/lib/i18n';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { fetchPublicServices } from '@/lib/server-data';
-
+import ServicesGridClient from '@/components/service/ServicesGridClient';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -288,30 +288,11 @@ export default async function ServicesPage({ params }: ServicesPageProps) {
       <section style={{ padding: '4rem 0 6rem' }}>
         <div className="container">
           <div style={{ maxWidth: '1024px', margin: isRtl ? '0 0 0 auto' : '0 auto 0 0' }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '2.5rem',
-            }}>
-              {servicesList.map((service, i) => (
-                <div key={i} style={{ padding: '3rem 2.5rem', backgroundColor: 'var(--color-surface-1)', border: '1px solid var(--color-hairline)', display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ display: 'block', fontSize: '1rem', fontWeight: 500, color: 'var(--color-sand)', marginBottom: '1.5rem', letterSpacing: '0.1em' }}>
-                    0{i + 1}
-                  </span>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '1rem', lineHeight: 1.3 }}>
-                    {service.label}
-                  </h3>
-                  <p style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, flexGrow: 1 }}>
-                    {service.desc}
-                  </p>
-                  {'slug' in service && (
-                    <Link href={`/${locale}/services/${service.slug}`} style={{ display: 'inline-block', marginTop: '1.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-text-primary)', textDecoration: 'underline', textUnderlineOffset: '4px' }}>
-                       {locale === 'en' ? 'Read More' : locale === 'fr' ? 'En Savoir Plus' : 'اقرأ المزيد'}
-                    </Link>
-                  )}
-                </div>
-              ))}
-            </div>
+            <ServicesGridClient 
+              servicesList={servicesList} 
+              locale={locale as Locale} 
+              isRtl={isRtl} 
+            />
           </div>
         </div>
       </section>
